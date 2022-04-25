@@ -1,0 +1,213 @@
+{
+  "name": "Library",
+  "crossId": "4a893700-5667-4e3a-8937-005667ce3ae3",
+  "version": "1",
+  "description": "API used to write an article about debug mode",
+  "visibility": "PRIVATE",
+  "gravitee": "2.0.0",
+  "flow_mode": "DEFAULT",
+  "flows": [
+    {
+      "name": "",
+      "path-operator": {
+        "path": "/",
+        "operator": "STARTS_WITH"
+      },
+      "condition": "",
+      "consumers": [],
+      "methods": [],
+      "pre": [],
+      "post": [
+        {
+          "name": "JSON to JSON Transformation",
+          "description": "Apply discount",
+          "enabled": true,
+          "policy": "json-to-json",
+          "condition": "{(#request.headers['X-Library-Discount'] != null && #request.headers['X-Library-Discount'].size() > 0) || {#context.attributes['internal'] != null}}",
+          "configuration": {
+            "overrideContentType": true,
+            "scope": "RESPONSE",
+            "specification": "[\n  {\n \"operation\": \"shift\",\n \"spec\": {\n  \"*\": \"&\"\n }\n},\n  {\n    \"operation\": \"default\",\n    \"spec\": {\n      \"discount\": \"{#request.headers['X-Library-Discount'] != null ? #request.headers['X-Library-Discount'][0] : 10}%\"\n     }\n  }\n]"
+          }
+        }
+      ],
+      "enabled": true
+    }
+  ],
+  "resources": [],
+  "properties": [],
+  "plans": [
+    {
+      "id": "e62577ec-1dfb-3edb-8537-eded53d43d20",
+      "crossId": "83e5c9c3-31d0-4277-a5c9-c331d02277ba",
+      "name": "Internal",
+      "description": "Plan dedicated to internal teams of the Library",
+      "validation": "AUTO",
+      "security": "API_KEY",
+      "securityDefinition": "{}",
+      "type": "API",
+      "status": "PUBLISHED",
+      "api": "8f9e5ef0-94f1-3ed4-afb8-ade000a03436",
+      "order": 1,
+      "characteristics": [],
+      "created_at": 1649224393335,
+      "updated_at": 1649224393335,
+      "published_at": 1649224393335,
+      "paths": {},
+      "flows": [
+        {
+          "name": "",
+          "path-operator": {
+            "path": "/",
+            "operator": "STARTS_WITH"
+          },
+          "condition": "",
+          "consumers": [],
+          "methods": [],
+          "pre": [
+            {
+              "name": "Assign attributes",
+              "description": "",
+              "enabled": true,
+              "policy": "policy-assign-attributes",
+              "configuration": {
+                "scope": "REQUEST",
+                "attributes": [
+                  {
+                    "name": "internal",
+                    "value": "{#context.attributes[\"application\"]}-internal"
+                  }
+                ]
+              }
+            }
+          ],
+          "post": [],
+          "enabled": true
+        }
+      ],
+      "comment_required": false
+    },
+    {
+      "id": "6e45c668-0537-3d5e-81e3-3e5f69196a43",
+      "crossId": "6b586ed2-4332-4f85-986e-d243328f851c",
+      "name": "Freemium",
+      "description": "Free and limited plan",
+      "validation": "AUTO",
+      "security": "KEY_LESS",
+      "type": "API",
+      "status": "PUBLISHED",
+      "api": "8f9e5ef0-94f1-3ed4-afb8-ade000a03436",
+      "order": 0,
+      "characteristics": [],
+      "created_at": 1649224393208,
+      "updated_at": 1649224393208,
+      "published_at": 1649224393208,
+      "paths": {},
+      "flows": [
+        {
+          "name": "",
+          "path-operator": {
+            "path": "/",
+            "operator": "STARTS_WITH"
+          },
+          "condition": "",
+          "consumers": [],
+          "methods": [],
+          "pre": [
+            {
+              "name": "Rate Limit",
+              "description": "Limit to 5 requests / 10 seconds",
+              "enabled": true,
+              "policy": "rate-limit",
+              "configuration": {
+                "async": false,
+                "addHeaders": false,
+                "rate": {
+                  "periodTime": 10,
+                  "limit": 5,
+                  "periodTimeUnit": "SECONDS",
+                  "key": "rate-limit-library"
+                }
+              }
+            }
+          ],
+          "post": [
+            {
+              "name": "JSON to JSON Transformation",
+              "description": "",
+              "enabled": true,
+              "policy": "json-to-json",
+              "configuration": {
+                "overrideContentType": true,
+                "scope": "RESPONSE",
+                "specification": "[\n  {\n    \"operation\": \"remove\",\n    \"spec\": {\n      \"books\": {\n        \"*\": {\n          \"_internalReference\": \"\"\n        }\n      }\n    }\n  }\n]"
+              }
+            }
+          ],
+          "enabled": true
+        }
+      ],
+      "comment_required": false
+    }
+  ],
+  "metadata": [
+    {
+      "key": "email-support",
+      "name": "email-support",
+      "format": "MAIL",
+      "value": "${(api.primaryOwner.email)!''}",
+      "defaultValue": "support@change.me",
+      "apiId": "8f9e5ef0-94f1-3ed4-afb8-ade000a03436"
+    }
+  ],
+  "id": "8f9e5ef0-94f1-3ed4-afb8-ade000a03436",
+  "path_mappings": [],
+  "proxy": {
+    "virtual_hosts": [
+      {
+        "path": "/library"
+      }
+    ],
+    "strip_context_path": false,
+    "preserve_host": false,
+    "logging": {
+      "mode": "NONE",
+      "content": "NONE",
+      "scope": "NONE"
+    },
+    "groups": [
+      {
+        "name": "default-group",
+        "endpoints": [
+          {
+            "backup": false,
+            "inherit": true,
+            "name": "default",
+            "weight": 1,
+            "type": "http",
+            "target": "http://localhost:8082/library-backend"
+          }
+        ],
+        "load_balancing": {
+          "type": "ROUND_ROBIN"
+        },
+        "http": {
+          "connectTimeout": 5000,
+          "idleTimeout": 60000,
+          "keepAlive": true,
+          "readTimeout": 10000,
+          "pipelining": false,
+          "maxConcurrentConnections": 100,
+          "useCompression": true,
+          "followRedirects": false
+        }
+      }
+    ]
+  },
+  "response_templates": {},
+  "primaryOwner": {
+    "id": "a3550403-a2fa-476e-9504-03a2fa176e0e",
+    "displayName": "admin",
+    "type": "USER"
+  }
+}

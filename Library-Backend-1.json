@@ -1,0 +1,112 @@
+{
+  "name": "Library-Backend",
+  "crossId": "69509bfa-386d-46a0-909b-fa386d26a0c4",
+  "version": "1",
+  "description": "API used as a backend to write an article about debug mode",
+  "visibility": "PRIVATE",
+  "gravitee": "2.0.0",
+  "flow_mode": "DEFAULT",
+  "resources": [],
+  "properties": [],
+  "plans": [
+    {
+      "id": "6cf53c16-f372-36cb-bb92-fec472764439",
+      "crossId": "a2b244b4-735f-4d6c-b244-b4735f9d6cfa",
+      "name": "keyless",
+      "description": "keyless",
+      "validation": "AUTO",
+      "security": "KEY_LESS",
+      "type": "API",
+      "status": "PUBLISHED",
+      "api": "9299e2af-0a20-3c74-9f9e-eeef4a285c21",
+      "order": 0,
+      "characteristics": [],
+      "created_at": 1649224371363,
+      "updated_at": 1649224371363,
+      "published_at": 1649224371365,
+      "paths": {},
+      "flows": [
+        {
+          "name": "",
+          "path-operator": {
+            "path": "/",
+            "operator": "STARTS_WITH"
+          },
+          "condition": "",
+          "consumers": [],
+          "methods": [],
+          "pre": [
+            {
+              "name": "Mock",
+              "description": "",
+              "enabled": true,
+              "policy": "mock",
+              "configuration": {
+                "content": "{\n  \"books\": [\n    {\n      \"title\": \"A tale of two cities\",\n      \"author\": \"Charles Dickens\",\n      \"_internalReference\": \"gio_b1\"\n    },\n    {\n      \"title\": \"The Lord of the Rings\",\n      \"author\": \"J.R.R Tolkien\",\n      \"_internalReference\": \"gio_b2\"\n    },\n    {\n      \"title\": \"The Hitchhiker's Guide to the Galaxy\",\n      \"author\": \"Douglas Adams\",\n      \"_internalReference\": \"gio_b3\"\n    }\n  ]\n}",
+                "status": "200"
+              }
+            }
+          ],
+          "post": [],
+          "enabled": true
+        }
+      ],
+      "comment_required": false
+    }
+  ],
+  "metadata": [
+    {
+      "key": "email-support",
+      "name": "email-support",
+      "format": "MAIL",
+      "value": "${(api.primaryOwner.email)!''}",
+      "defaultValue": "support@change.me",
+      "apiId": "9299e2af-0a20-3c74-9f9e-eeef4a285c21"
+    }
+  ],
+  "id": "9299e2af-0a20-3c74-9f9e-eeef4a285c21",
+  "path_mappings": [],
+  "proxy": {
+    "virtual_hosts": [
+      {
+        "path": "/library-backend"
+      }
+    ],
+    "strip_context_path": false,
+    "preserve_host": false,
+    "groups": [
+      {
+        "name": "default-group",
+        "endpoints": [
+          {
+            "backup": false,
+            "inherit": true,
+            "name": "default",
+            "weight": 1,
+            "type": "http",
+            "target": "https://api.gravitee.io/echo"
+          }
+        ],
+        "load_balancing": {
+          "type": "ROUND_ROBIN"
+        },
+        "http": {
+          "connectTimeout": 5000,
+          "idleTimeout": 60000,
+          "keepAlive": true,
+          "readTimeout": 10000,
+          "pipelining": false,
+          "maxConcurrentConnections": 100,
+          "useCompression": true,
+          "followRedirects": false
+        }
+      }
+    ]
+  },
+  "response_templates": {},
+  "primaryOwner": {
+    "id": "a3550403-a2fa-476e-9504-03a2fa176e0e",
+    "displayName": "admin",
+    "type": "USER"
+  }
+}
